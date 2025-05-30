@@ -6,100 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Energy Solutions Dashboard</title>
     <link rel="stylesheet" href="/src/index.css" />
-    <style>
-      /* Basic CSS for tab active state - Tailwind can do this, but a quick direct rule works */
-      .tab-button.active {
-        @apply bg-indigo-800 border-indigo-800; /* Tailwind classes for active state */
-      }
-    </style>
   </head>
   <body class="bg-gray-100 min-h-screen font-sans">
+    <div id="root"></div>
 
-    <header class="bg-indigo-700 text-white p-4 text-center shadow-md">
-        <h1 class="text-4xl font-bold">Energy Solutions Dashboard</h1>
-    </header>
-
-    <nav class="bg-indigo-600 shadow-lg">
-        <ul class="flex justify-center p-4">
-            <li class="mr-4">
-                <button id="tab-solar" class="tab-button active bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-4 rounded transition duration-150">
-                    Rooftop Solar
-                </button>
-            </li>
-            <li class="mr-4">
-                <button id="tab-battery-degradation" class="tab-button bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded transition duration-150">
-                    Battery Degradation
-                </button>
-            </li>
-            <li>
-                <button id="tab-bess" class="tab-button bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded transition duration-150">
-                    BESS Sizing
-                </button>
-            </li>
-        </ul>
-    </nav>
-
-    <main class="container mx-auto p-4">
-        <div id="rooftopSolarContainer" class="calculator-content"></div>
-        <div id="batteryDegradationContainer" class="calculator-content hidden"></div>
-        <div id="bessBotContainer" class="calculator-content hidden"></div>
-    </main>
-
-    <script type="module">
-        import { renderRooftopSolarCalculator } from './src/components/RooftopSolarCalculator.js';
-        import { renderBatteryDegradationCalculator } from './src/components/BatteryDegradationCalculator.js';
-        import { renderBESSBotCalculator } from './src/components/BESSBotCalculator.js';
-
-        const calculatorMap = {
-            'solar': {
-                render: renderRooftopSolarCalculator,
-                containerId: 'rooftopSolarContainer'
-            },
-            'battery-degradation': {
-                render: renderBatteryDegradationCalculator,
-                containerId: 'batteryDegradationContainer'
-            },
-            'bess': {
-                render: renderBESSBotCalculator,
-                containerId: 'bessBotContainer'
-            }
-        };
-
-        let activeCalculator = 'solar'; // Default active calculator
-
-        function showCalculator(calculatorId) {
-            // Hide all calculator content divs
-            document.querySelectorAll('.calculator-content').forEach(div => {
-                div.classList.add('hidden');
-            });
-            // Deactivate all tab buttons
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active', 'bg-indigo-800', 'border-indigo-800');
-                button.classList.add('bg-indigo-500', 'hover:bg-indigo-600');
-            });
-
-            // Show the selected calculator content
-            document.getElementById(calculatorMap[calculatorId].containerId).classList.remove('hidden');
-
-            // Activate the corresponding tab button
-            document.getElementById(`tab-${calculatorId}`).classList.add('active', 'bg-indigo-800', 'border-indigo-800');
-            document.getElementById(`tab-${calculatorId}`).classList.remove('bg-indigo-500', 'hover:bg-indigo-600');
-
-
-            // Render the calculator if it hasn't been rendered yet (or re-render on switch)
-            // For simplicity, we re-render every time here. For complex apps, you might render once.
-            calculatorMap[calculatorId].render(calculatorMap[calculatorId].containerId);
-            activeCalculator = calculatorId; // Update active state
-        }
-
-        // Add event listeners to navigation buttons
-        document.getElementById('tab-solar').addEventListener('click', () => showCalculator('solar'));
-        document.getElementById('tab-battery-degradation').addEventListener('click', () => showCalculator('battery-degradation'));
-        document.getElementById('tab-bess').addEventListener('click', () => showCalculator('bess'));
-
-        // Initial render of the default calculator
-        showCalculator(activeCalculator);
-
-    </script>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
