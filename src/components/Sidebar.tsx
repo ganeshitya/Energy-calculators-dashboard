@@ -1,5 +1,5 @@
 // src/components/Sidebar.jsx
-import React from 'react';
+import { useState } from 'react';
 
 // Accept setActiveCalculator as a prop
 const Sidebar = ({ setActiveCalculator, activeCalculator }) => {

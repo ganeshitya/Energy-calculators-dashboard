@@ -1,9 +1,9 @@
 // src/App.jsx
-import React, { useState } from 'react';
-import Sidebar from './components/Sidebar';
+import { useState } from 'react';
+import Sidebar from './components/Sidebar.tsx';
 
 // Import your calculator components
-import RooftopSolarCalculator from './components/RooftopSolarCalculator';
+import RooftopSolarCalculator from './components/RooftopSolarCalculator.tsx';
 // You'll create these next:
 // import BatteryDegradationCalculator from './components/BatteryDegradationCalculator';
 // import BESSBotCalculator from './components/BESSBotCalculator';

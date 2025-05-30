@@ -1,5 +1,5 @@
 // src/components/RooftopSolarCalculator.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const RooftopSolarCalculator = () => {
   // State for input values
