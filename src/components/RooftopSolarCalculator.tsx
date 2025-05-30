@@ -1,24 +1,24 @@
-// src/components/RooftopSolarCalculator.jsx
-import { useState } from 'react';
+// src/components/RooftopSolarCalculator.tsx
+import { useState, FC } from 'react';
 
-const RooftopSolarCalculator = () => {
+const RooftopSolarCalculator: FC = () => {
   // State for input values
-  const [sunlightHours, setSunlightHours] = useState(4);
-  const [desiredEnergy, setDesiredEnergy] = useState(10);
-  const [panelEfficiency, setPanelEfficiency] = useState(20);
-  const [systemLosses, setSystemLosses] = useState(14);
+  const [sunlightHours, setSunlightHours] = useState<number>(4);
+  const [desiredEnergy, setDesiredEnergy] = useState<number>(10);
+  const [panelEfficiency, setPanelEfficiency] = useState<number>(20);
+  const [systemLosses, setSystemLosses] = useState<number>(14);
 
-  // State for the result
-  const [requiredArea, setRequiredArea] = useState(null);
-  const [showResult, setShowResult] = useState(false);
+  // State for the result, explicitly typed as string or null
+  const [requiredArea, setRequiredArea] = useState<string | null>(null);
+  const [showResult, setShowResult] = useState<boolean>(false);
 
   const calculateArea = () => {
-    // Input validation (improved from simple alert)
+    // Input validation
     if (isNaN(sunlightHours) || isNaN(desiredEnergy) || isNaN(panelEfficiency) || isNaN(systemLosses) ||
         sunlightHours <= 0 || desiredEnergy <= 0 || panelEfficiency <= 0 || systemLosses < 0) {
       setRequiredArea(null);
-      setShowResult(true); // Still show result area, but with error message
-      alert('Please enter valid positive numbers for all inputs.'); // Keep alert for now, but we can make this nicer later
+      setShowResult(true);
+      alert('Please enter valid positive numbers for all inputs.');
       return;
     }
 
@@ -26,7 +26,7 @@ const RooftopSolarCalculator = () => {
     const eff = panelEfficiency / 100;
     const loss = systemLosses / 100;
 
-    // Calculation (same as before)
+    // Calculation
     const calculatedArea = desiredEnergy / (sunlightHours * eff * (1 - loss));
 
     setRequiredArea(calculatedArea.toFixed(2));

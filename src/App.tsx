@@ -1,43 +1,39 @@
-// src/App.jsx
-import { useState } from 'react';
+// src/App.tsx
+import { useState, FC } from 'react'; // Import FC for typing functional components
 import Sidebar from './components/Sidebar.tsx';
 
-// Import your calculator components
+// Import all your calculator components
 import RooftopSolarCalculator from './components/RooftopSolarCalculator.tsx';
-// You'll create these next:
-// import BatteryDegradationCalculator from './components/BatteryDegradationCalculator';
-// import BESSBotCalculator from './components/BESSBotCalculator';
+import BatteryDegradationCalculator from './components/BatteryDegradationCalculator.tsx';
+import BESSBotCalculator from './components/BESSBotCalculator.tsx';
 
-const App = () => {
-  // State to keep track of the currently active calculator
-  const [activeCalculator, setActiveCalculator] = useState('solar'); // Default to 'solar'
+const App: FC = () => { // Type App as a Functional Component
+  const [activeCalculator, setActiveCalculator] = useState<string>('solar'); // Default to 'solar'
 
-  // Function to render the correct calculator component based on activeCalculator state
   const renderCalculator = () => {
     switch (activeCalculator) {
       case 'solar':
         return <RooftopSolarCalculator />;
-      // Add cases for other calculators once you convert them
-      // case 'batteryDegradation':
-      //   return <BatteryDegradationCalculator />;
-      // case 'bessSizing':
-      //   return <BESSBotCalculator />;
+      case 'batteryDegradation':
+        return <BatteryDegradationCalculator />;
+      case 'bessSizing':
+        return <BESSBotCalculator />;
       default:
-        return <p className="text-gray-700">Please select a calculator from the sidebar.</p>;
+        return <p className="text-gray-700 text-center text-lg mt-12">Please select a calculator from the sidebar to begin.</p>;
     }
   };
 
   return (
-    <div className="flex h-screen bg-gray-100"> {/* Added bg-gray-100 to body here */}
-      <Sidebar setActiveCalculator={setActiveCalculator} activeCalculator={activeCalculator} /> {/* Pass state setter to Sidebar */}
+    <div className="flex h-screen bg-gray-100">
+      <Sidebar setActiveCalculator={setActiveCalculator} activeCalculator={activeCalculator} />
       <div className="flex-1 p-6 bg-gray-50 overflow-auto">
         <h1 className="text-3xl font-bold text-blue-600 mb-4">
           GM-Energy Calculators
         </h1>
-        <p className="text-gray-700">Choose a calculator from the sidebar 👇</p>
+        <p className="text-gray-700 mb-8">Your specialized tools for energy and power solutions.</p>
         
         {/* Render the selected calculator */}
-        <div id="calculator-display-area" className="mt-8">
+        <div id="calculator-display-area">
           {renderCalculator()}
         </div>
       </div>

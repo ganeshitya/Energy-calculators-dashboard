@@ -1,10 +1,17 @@
-// src/components/Sidebar.jsx
-import { useState } from 'react';
+// src/components/Sidebar.tsx
+import React, { FC } from 'react'; // Keep React and import FC for typing
 
-// Accept setActiveCalculator as a prop
-const Sidebar = ({ setActiveCalculator, activeCalculator }) => {
+// Define the types for the props that Sidebar expects
+interface SidebarProps {
+  setActiveCalculator: (calculatorName: string) => void; // Function that takes a string and returns nothing
+  activeCalculator: string; // String to hold the name of the active calculator
+}
 
-  const handleCalculatorClick = (calculatorName) => {
+// Type the Sidebar functional component using FC (Functional Component) and SidebarProps
+const Sidebar: FC<SidebarProps> = ({ setActiveCalculator, activeCalculator }) => {
+
+  // Explicitly type the 'calculatorName' parameter as string
+  const handleCalculatorClick = (calculatorName: string) => {
     setActiveCalculator(calculatorName);
   };
 
@@ -16,7 +23,6 @@ const Sidebar = ({ setActiveCalculator, activeCalculator }) => {
           <li className="mb-4">
             <button
               onClick={() => handleCalculatorClick('solar')}
-              // Add active class based on activeCalculator prop
               className={`block py-2 px-4 rounded transition duration-150 w-full text-left
                 ${activeCalculator === 'solar' ? 'bg-indigo-800 shadow-inner' : 'hover:bg-indigo-600'}`
               }
@@ -44,7 +50,6 @@ const Sidebar = ({ setActiveCalculator, activeCalculator }) => {
               BESS Sizing
             </button>
           </li>
-          {/* Add more calculator links here */}
         </ul>
       </nav>
     </div>
