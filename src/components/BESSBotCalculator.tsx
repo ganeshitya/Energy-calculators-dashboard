@@ -58,7 +58,7 @@ const BESSBotCalculator: FC = () => {
 
   return (
     <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-gray-100 max-w-md mx-auto my-8 transform transition-all duration-300 hover:scale-[1.01]">
-      <h2 className="text-3xl font-extrabold text-indigo-700 mb-6 text-center tracking-tight">BESS Sizing Calculator</h2>
+      <h2 className="text-2xl font-extrabold text-blue-800 mb-6 text-center tracking-tight">BESS Sizing Calculator</h2>
 
       <div className="space-y-5"> {/* Added space between input groups */}
         <div className="input-group">
@@ -72,7 +72,7 @@ const BESSBotCalculator: FC = () => {
             onChange={(e) => setLoadDemandKW(parseFloat(e.target.value))}
             step="0.1"
             min="0"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg transition duration-150 shadow-sm"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-base transition duration-150 shadow-sm"
             placeholder="e.g., 10"
           />
         </div>
@@ -88,7 +88,7 @@ const BESSBotCalculator: FC = () => {
             onChange={(e) => setDurationHours(parseFloat(e.target.value))}
             step="0.1"
             min="0"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg transition duration-150 shadow-sm"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-base transition duration-150 shadow-sm"
             placeholder="e.g., 4"
           />
         </div>
@@ -104,7 +104,7 @@ const BESSBotCalculator: FC = () => {
             onChange={(e) => setBatteryVoltage(parseFloat(e.target.value))}
             step="1"
             min="0"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg transition duration-150 shadow-sm"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-base transition duration-150 shadow-sm"
             placeholder="e.g., 48"
           />
         </div>
@@ -117,7 +117,7 @@ const BESSBotCalculator: FC = () => {
             id="batteryType"
             value={batteryType}
             onChange={(e) => setBatteryType(e.target.value as keyof typeof efficiencyMap)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg bg-white shadow-sm"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-base bg-white shadow-sm"
           >
             {Object.keys(efficiencyMap).map((type) => (
               <option key={type} value={type}>{type}</option>
@@ -137,7 +137,7 @@ const BESSBotCalculator: FC = () => {
             step="1"
             min="1"
             max="100"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg transition duration-150 shadow-sm"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-base transition duration-150 shadow-sm"
             placeholder="e.g., 90 (or leave blank)"
           />
         </div>
@@ -151,15 +151,15 @@ const BESSBotCalculator: FC = () => {
 
       <button
         onClick={calculateBESS}
-        className="mt-6 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-300 w-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg text-lg"
+        className="mt-6 bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-800 hover:to-indigo-800 text-white font-bold py-3 px-6 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 w-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg text-base"
       >
         Calculate BESS Sizing
       </button>
 
       {showResult && capacityKWH !== null && capacityAH !== null && (
-        <div className="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg text-indigo-800 font-semibold text-center space-y-2 shadow-md">
-          <p className="text-xl">Required Battery Capacity: <span className="text-2xl font-extrabold">{capacityKWH}</span> kWh</p>
-          <p className="text-xl">Required Battery Capacity: <span className="text-2xl font-bold">{capacityAH}</span> Ah</p>
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 font-semibold text-center space-y-2 shadow-md">
+          <p className="text-lg">Required Battery Capacity: <span className="text-xl font-extrabold">{capacityKWH}</span> kWh</p>
+          <p className="text-lg">Required Battery Capacity: <span className="text-xl font-bold">{capacityAH}</span> Ah</p>
         </div>
       )}
     </div>
