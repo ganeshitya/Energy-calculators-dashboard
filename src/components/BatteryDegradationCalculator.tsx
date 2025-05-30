@@ -1,6 +1,6 @@
 // src/components/BatteryDegradationCalculator.tsx
 import { useState } from 'react';
-import type { FC } from 'react'; // Use type-only import for FC
+import type { FC } from 'react';
 
 const BatteryDegradationCalculator: FC = () => {
   // State for input values
@@ -8,33 +8,41 @@ const BatteryDegradationCalculator: FC = () => {
   const [cyclesPerYear, setCyclesPerYear] = useState<number>(200);
   const [years, setYears] = useState<number>(5);
   const [degradationRatePerCycle, setDegradationRatePerCycle] = useState<number>(0.01); // Example: 0.01 for 0.01% per cycle
+  const [tempFactor, setTempFactor] = useState<number>(1.0); // Temperature Factor (0-1)
+  const [dodFactor, setDodFactor] = useState<number>(1.0); // Depth of Discharge Factor (0-1)
 
-  // State for results, explicitly typed as number or null
+  // State for results
+  const [totalCycles, setTotalCycles] = useState<number | null>(null);
+  const [adjustedDegradationRate, setAdjustedDegradationRate] = useState<number | null>(null);
+  const [totalCapacityDegradation, setTotalCapacityDegradation] = useState<number | null>(null);
   const [finalCapacity, setFinalCapacity] = useState<number | null>(null);
-  const [totalDegradation, setTotalDegradation] = useState<number | null>(null);
   const [showResult, setShowResult] = useState<boolean>(false);
 
   const calculateDegradation = () => {
     if (isNaN(initialCapacity) || isNaN(cyclesPerYear) || isNaN(years) || isNaN(degradationRatePerCycle) ||
-        initialCapacity <= 0 || cyclesPerYear < 0 || years <= 0 || degradationRatePerCycle < 0) {
-      alert('Please enter valid numbers for all inputs.');
+        isNaN(tempFactor) || isNaN(dodFactor) ||
+        initialCapacity <= 0 || cyclesPerYear < 0 || years <= 0 || degradationRatePerCycle < 0 ||
+        tempFactor < 0 || tempFactor > 1 || dodFactor < 0 || dodFactor > 1) {
+      alert('Please enter valid numbers for all inputs. Factors should be between 0 and 1.');
+      setTotalCycles(null);
+      setAdjustedDegradationRate(null);
+      setTotalCapacityDegradation(null);
       setFinalCapacity(null);
-      setTotalDegradation(null);
       setShowResult(true);
       return;
     }
 
-    const totalCycles = cyclesPerYear * years;
-    const totalDegradationPercentage = totalCycles * degradationRatePerCycle; // e.g., 200 * 5 * 0.01 = 10%
+    // Calculations matching Streamlit app
+    const calculatedTotalCycles = cyclesPerYear * years;
+    const calculatedAdjustedDegradationRate = degradationRatePerCycle * tempFactor * dodFactor;
+    const calculatedTotalDegradationPercentage = calculatedTotalCycles * calculatedAdjustedDegradationRate;
 
-    if (totalDegradationPercentage >= 100) {
-        setFinalCapacity(0); // Cannot go below 0% capacity
-        setTotalDegradation(100);
-    } else {
-        const remainingCapacityPercentage = initialCapacity - totalDegradationPercentage;
-        setFinalCapacity(parseFloat(remainingCapacityPercentage.toFixed(2)));
-        setTotalDegradation(parseFloat(totalDegradationPercentage.toFixed(2)));
-    }
+    const remainingCapacityPercentage = initialCapacity - calculatedTotalDegradationPercentage;
+
+    setTotalCycles(calculatedTotalCycles);
+    setAdjustedDegradationRate(parseFloat(calculatedAdjustedDegradationRate.toFixed(4))); // 4 decimal places for rate
+    setTotalCapacityDegradation(parseFloat(calculatedTotalDegradationPercentage.toFixed(2)));
+    setFinalCapacity(parseFloat(Math.max(0, remainingCapacityPercentage).toFixed(2))); // Capacity cannot go below 0%
     setShowResult(true);
   };
 
@@ -44,7 +52,7 @@ const BatteryDegradationCalculator: FC = () => {
 
       <div className="mb-5">
         <label htmlFor="initialCapacity" className="block text-gray-700 text-base font-semibold mb-2">
-          Initial Battery Capacity (%):
+          Initial Capacity (%):
         </label>
         <input
           type="number"
@@ -90,7 +98,7 @@ const BatteryDegradationCalculator: FC = () => {
         />
       </div>
 
-      <div className="mb-6">
+      <div className="mb-5">
         <label htmlFor="degradationRatePerCycle" className="block text-gray-700 text-base font-semibold mb-2">
           Degradation Rate Per Cycle (%):
         </label>
@@ -106,6 +114,40 @@ const BatteryDegradationCalculator: FC = () => {
         />
       </div>
 
+      <div className="mb-5">
+        <label htmlFor="tempFactor" className="block text-gray-700 text-base font-semibold mb-2">
+          Temperature Factor (0-1):
+        </label>
+        <input
+          type="number"
+          id="tempFactor"
+          value={tempFactor}
+          onChange={(e) => setTempFactor(parseFloat(e.target.value))}
+          step="0.01"
+          min="0"
+          max="1"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
+          placeholder="e.g., 1.0"
+        />
+      </div>
+
+      <div className="mb-6">
+        <label htmlFor="dodFactor" className="block text-gray-700 text-base font-semibold mb-2">
+          Depth of Discharge Factor (0-1):
+        </label>
+        <input
+          type="number"
+          id="dodFactor"
+          value={dodFactor}
+          onChange={(e) => setDodFactor(parseFloat(e.target.value))}
+          step="0.01"
+          min="0"
+          max="1"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
+          placeholder="e.g., 1.0"
+        />
+      </div>
+
       <button
         onClick={calculateDegradation}
         className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-200 w-full transition duration-200 text-lg"
@@ -114,11 +156,13 @@ const BatteryDegradationCalculator: FC = () => {
       </button>
 
       {showResult && (
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 font-semibold text-center">
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 font-semibold text-center space-y-2">
           {finalCapacity !== null ? (
             <>
-              <p>Final Capacity: <span className="text-2xl font-extrabold">{finalCapacity}%</span></p>
-              <p>Total Degradation: <span className="text-xl font-bold">{totalDegradation}%</span></p>
+              <p>Total Cycles Over Period: <span className="text-xl font-extrabold">{totalCycles}</span> cycles</p>
+              <p>Adjusted Degradation Rate Per Cycle: <span className="text-xl font-extrabold">{adjustedDegradationRate}%</span></p>
+              <p>Total Capacity Degradation: <span className="text-xl font-extrabold">{totalCapacityDegradation}%</span></p>
+              <p>Final Battery Capacity: <span className="text-2xl font-extrabold">{finalCapacity}%</span></p>
             </>
           ) : (
             <span className="text-red-600">Please enter valid inputs.</span>

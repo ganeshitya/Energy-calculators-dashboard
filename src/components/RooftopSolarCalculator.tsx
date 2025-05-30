@@ -1,122 +1,159 @@
-// src/components/BESSBotCalculator.tsx
+// src/components/RooftopSolarCalculator.tsx
 import { useState } from 'react';
-import type { FC } from 'react'; // Use type-only import for FC
+import type { FC } from 'react';
 
-const BESSBotCalculator: FC = () => {
+const RooftopSolarCalculator: FC = () => {
   // State for input values
-  const [loadDemandKW, setLoadDemandKW] = useState<number>(10);
-  const [durationHours, setDurationHours] = useState<number>(4);
-  const [batteryVoltage, setBatteryVoltage] = useState<number>(48);
-  const [efficiency, setEfficiency] = useState<number>(90); // in percent
+  const [sunlightHours, setSunlightHours] = useState<number>(4);
+  const [desiredEnergy, setDesiredEnergy] = useState<number>(10);
+  const [panelEfficiency, setPanelEfficiency] = useState<number>(20); // in percent
+  const [systemLosses, setSystemLosses] = useState<number>(14); // in percent
+  const [panelWattage, setPanelWattage] = useState<number>(300); // Watts per panel
+  const [panelArea, setPanelArea] = useState<number>(1.6); // sq meters per panel
 
-  // State for results, explicitly typed as number or null
-  const [capacityKWH, setCapacityKWH] = useState<number | null>(null);
-  const [capacityAH, setCapacityAH] = useState<number | null>(null);
+  // State for the results, explicitly typed as number or null
+  const [requiredSystemSizeKW, setRequiredSystemSizeKW] = useState<number | null>(null);
+  const [numPanels, setNumPanels] = useState<number | null>(null);
+  const [requiredAreaSqm, setRequiredAreaSqm] = useState<number | null>(null);
   const [showResult, setShowResult] = useState<boolean>(false);
 
-  const calculateBESS = () => {
-    if (isNaN(loadDemandKW) || isNaN(durationHours) || isNaN(batteryVoltage) || isNaN(efficiency) ||
-        loadDemandKW <= 0 || durationHours <= 0 || batteryVoltage <= 0 || efficiency <= 0 || efficiency > 100) {
-      alert('Please enter valid positive numbers for all inputs. Efficiency should be between 1 and 100.');
-      setCapacityKWH(null);
-      setCapacityAH(null);
+  const calculateSolar = () => {
+    // Input validation
+    if (isNaN(sunlightHours) || isNaN(desiredEnergy) || isNaN(panelEfficiency) || isNaN(systemLosses) ||
+        isNaN(panelWattage) || isNaN(panelArea) ||
+        sunlightHours <= 0 || desiredEnergy <= 0 || panelEfficiency <= 0 || systemLosses < 0 ||
+        panelWattage <= 0 || panelArea <= 0) {
+      setRequiredSystemSizeKW(null);
+      setNumPanels(null);
+      setRequiredAreaSqm(null);
       setShowResult(true);
+      alert('Please enter valid positive numbers for all inputs.');
       return;
     }
 
-    const efficiencyDecimal = efficiency / 100;
+    // Convert percentages to decimals
+    const eff = panelEfficiency / 100;
+    const loss = systemLosses / 100;
 
-    // Calculation
-    const requiredCapacityKWH = (loadDemandKW * durationHours) / efficiencyDecimal;
-    const requiredCapacityAH = (requiredCapacityKWH * 1000) / batteryVoltage; // Convert kWh to Wh, then to Ah
+    // Calculations matching Streamlit app
+    const systemSizeKW = desiredEnergy / (sunlightHours * eff * (1 - loss));
+    const panels = (systemSizeKW * 1000) / panelWattage; // Convert kW to Watts for panel count
+    const areaSqm = panels * panelArea;
 
-    setCapacityKWH(parseFloat(requiredCapacityKWH.toFixed(2)));
-    setCapacityAH(parseFloat(requiredCapacityAH.toFixed(2)));
+    setRequiredSystemSizeKW(parseFloat(systemSizeKW.toFixed(2)));
+    setNumPanels(Math.ceil(panels)); // Number of panels should be a whole number, rounded up
+    setRequiredAreaSqm(parseFloat(areaSqm.toFixed(2)));
     setShowResult(true);
   };
 
   return (
     <div className="bg-white p-6 sm:p-8 rounded-xl shadow-xl border border-gray-200 max-w-md mx-auto my-8">
-      <h2 className="text-3xl font-bold text-blue-700 mb-6 text-center">BESS Sizing Calculator</h2>
+      <h2 className="text-3xl font-bold text-blue-700 mb-6 text-center">Rooftop Solar Calculator</h2>
 
       <div className="mb-5">
-        <label htmlFor="loadDemandKW" className="block text-gray-700 text-base font-semibold mb-2">
-          Peak Load Demand (kW):
+        <label htmlFor="sunlightHours" className="block text-gray-700 text-base font-semibold mb-2">
+          Avg. Daily Sunlight Hours (peak sun hours):
         </label>
         <input
           type="number"
-          id="loadDemandKW"
-          value={loadDemandKW}
-          onChange={(e) => setLoadDemandKW(parseFloat(e.target.value))}
+          id="sunlightHours"
+          value={sunlightHours}
+          onChange={(e) => setSunlightHours(parseFloat(e.target.value))}
           step="0.1"
-          min="0"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
-          placeholder="e.g., 10"
-        />
-      </div>
-
-      <div className="mb-5">
-        <label htmlFor="durationHours" className="block text-gray-700 text-base font-semibold mb-2">
-          Backup Duration (hours):
-        </label>
-        <input
-          type="number"
-          id="durationHours"
-          value={durationHours}
-          onChange={(e) => setDurationHours(parseFloat(e.target.value))}
-          step="0.1"
-          min="0"
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
           placeholder="e.g., 4"
         />
       </div>
 
       <div className="mb-5">
-        <label htmlFor="batteryVoltage" className="block text-gray-700 text-base font-semibold mb-2">
-          Battery System Voltage (V):
+        <label htmlFor="desiredEnergy" className="block text-gray-700 text-base font-semibold mb-2">
+          Desired Daily Energy Production (kWh):
         </label>
         <input
           type="number"
-          id="batteryVoltage"
-          value={batteryVoltage}
-          onChange={(e) => setBatteryVoltage(parseFloat(e.target.value))}
-          step="1"
-          min="0"
+          id="desiredEnergy"
+          value={desiredEnergy}
+          onChange={(e) => setDesiredEnergy(parseFloat(e.target.value))}
+          step="0.1"
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
-          placeholder="e.g., 48"
+          placeholder="e.g., 10"
+        />
+      </div>
+
+      <div className="mb-5">
+        <label htmlFor="panelEfficiency" className="block text-gray-700 text-base font-semibold mb-2">
+          Solar Panel Efficiency (%):
+        </label>
+        <input
+          type="number"
+          id="panelEfficiency"
+          value={panelEfficiency}
+          onChange={(e) => setPanelEfficiency(parseFloat(e.target.value))}
+          step="1"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
+          placeholder="e.g., 20"
+        />
+      </div>
+
+      <div className="mb-5">
+        <label htmlFor="systemLosses" className="block text-gray-700 text-base font-semibold mb-2">
+          System Losses (%):
+        </label>
+        <input
+          type="number"
+          id="systemLosses"
+          value={systemLosses}
+          onChange={(e) => setSystemLosses(parseFloat(e.target.value))}
+          step="1"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
+          placeholder="e.g., 14"
+        />
+      </div>
+
+      <div className="mb-5">
+        <label htmlFor="panelWattage" className="block text-gray-700 text-base font-semibold mb-2">
+          Power Output per Standard Panel (Watts):
+        </label>
+        <input
+          type="number"
+          id="panelWattage"
+          value={panelWattage}
+          onChange={(e) => setPanelWattage(parseFloat(e.target.value))}
+          step="10"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
+          placeholder="e.g., 300"
         />
       </div>
 
       <div className="mb-6">
-        <label htmlFor="efficiency" className="block text-gray-700 text-base font-semibold mb-2">
-          System Efficiency (%):
+        <label htmlFor="panelArea" className="block text-gray-700 text-base font-semibold mb-2">
+          Standard Panel Area (sq meters):
         </label>
         <input
           type="number"
-          id="efficiency"
-          value={efficiency}
-          onChange={(e) => setEfficiency(parseFloat(e.target.value))}
-          step="1"
-          min="1"
-          max="100"
+          id="panelArea"
+          value={panelArea}
+          onChange={(e) => setPanelArea(parseFloat(e.target.value))}
+          step="0.1"
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
-          placeholder="e.g., 90"
+          placeholder="e.g., 1.6"
         />
       </div>
 
       <button
-        onClick={calculateBESS}
+        onClick={calculateSolar}
         className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-200 w-full transition duration-200 text-lg"
       >
-        Calculate BESS Sizing
+        Calculate Solar Requirements
       </button>
 
       {showResult && (
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 font-semibold text-center">
-          {capacityKWH !== null ? (
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 font-semibold text-center space-y-2">
+          {requiredSystemSizeKW !== null ? (
             <>
-              <p>Required Battery Capacity: <span className="text-2xl font-extrabold">{capacityKWH}</span> kWh</p>
-              <p>Equivalent Ah Capacity: <span className="text-xl font-bold">{capacityAH}</span> Ah</p>
+              <p>Required System Size: <span className="text-xl font-extrabold">{requiredSystemSizeKW}</span> kW</p>
+              <p>Number of Panels Required: <span className="text-xl font-extrabold">{numPanels}</span> panels</p>
+              <p>Required Area: <span className="text-xl font-extrabold">{requiredAreaSqm}</span> sq meters</p>
             </>
           ) : (
             <span className="text-red-600">Please enter valid inputs.</span>
@@ -127,4 +164,4 @@ const BESSBotCalculator: FC = () => {
   );
 };
 
-export default BESSBotCalculator;
+export default RooftopSolarCalculator;
