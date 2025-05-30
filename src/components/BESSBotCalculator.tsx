@@ -21,15 +21,16 @@ const BESSBotCalculator: FC = () => {
   const [capacityKWH, setCapacityKWH] = useState<number | null>(null);
   const [capacityAH, setCapacityAH] = useState<number | null>(null);
   const [showResult, setShowResult] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // State for error messages
 
   const calculateBESS = () => {
+    setErrorMessage(null); // Clear previous errors
+    setShowResult(false); // Hide previous result
+
     // Input validation
     if (isNaN(loadDemandKW) || isNaN(durationHours) || isNaN(batteryVoltage) ||
         loadDemandKW <= 0 || durationHours <= 0 || batteryVoltage <= 0) {
-      alert('Please enter valid positive numbers for Load Demand, Duration, and Battery Voltage.');
-      setCapacityKWH(null);
-      setCapacityAH(null);
-      setShowResult(true);
+      setErrorMessage('Please enter valid positive numbers for Load Demand, Duration, and Battery Voltage.');
       return;
     }
 
@@ -42,10 +43,7 @@ const BESSBotCalculator: FC = () => {
     }
 
     if (selectedEfficiency <= 0 || selectedEfficiency > 1) {
-        alert('Calculated or overridden efficiency is invalid. It must be between 0 and 1 (or 0-100%).');
-        setCapacityKWH(null);
-        setCapacityAH(null);
-        setShowResult(true);
+        setErrorMessage('Calculated or overridden efficiency is invalid. It must be between 0 and 1 (or 0-100%).');
         return;
     }
 
@@ -59,107 +57,109 @@ const BESSBotCalculator: FC = () => {
   };
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-xl shadow-xl border border-gray-200 max-w-md mx-auto my-8">
-      <h2 className="text-3xl font-bold text-blue-700 mb-6 text-center">BESS Sizing Calculator</h2>
+    <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-gray-100 max-w-md mx-auto my-8 transform transition-all duration-300 hover:scale-[1.01]">
+      <h2 className="text-3xl font-extrabold text-indigo-700 mb-6 text-center tracking-tight">BESS Sizing Calculator</h2>
 
-      <div className="mb-5">
-        <label htmlFor="loadDemandKW" className="block text-gray-700 text-base font-semibold mb-2">
-          Load Demand (kW):
-        </label>
-        <input
-          type="number"
-          id="loadDemandKW"
-          value={loadDemandKW}
-          onChange={(e) => setLoadDemandKW(parseFloat(e.target.value))}
-          step="0.1"
-          min="0"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
-          placeholder="e.g., 10"
-        />
-      </div>
+      <div className="space-y-5"> {/* Added space between input groups */}
+        <div className="input-group">
+          <label htmlFor="loadDemandKW" className="block text-gray-700 text-base font-semibold mb-2">
+            Load Demand (kW):
+          </label>
+          <input
+            type="number"
+            id="loadDemandKW"
+            value={loadDemandKW}
+            onChange={(e) => setLoadDemandKW(parseFloat(e.target.value))}
+            step="0.1"
+            min="0"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg transition duration-150 shadow-sm"
+            placeholder="e.g., 10"
+          />
+        </div>
 
-      <div className="mb-5">
-        <label htmlFor="durationHours" className="block text-gray-700 text-base font-semibold mb-2">
-          Duration of Backup (hours):
-        </label>
-        <input
-          type="number"
-          id="durationHours"
-          value={durationHours}
-          onChange={(e) => setDurationHours(parseFloat(e.target.value))}
-          step="0.1"
-          min="0"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
-          placeholder="e.g., 4"
-        />
-      </div>
+        <div className="input-group">
+          <label htmlFor="durationHours" className="block text-gray-700 text-base font-semibold mb-2">
+            Duration of Backup (hours):
+          </label>
+          <input
+            type="number"
+            id="durationHours"
+            value={durationHours}
+            onChange={(e) => setDurationHours(parseFloat(e.target.value))}
+            step="0.1"
+            min="0"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg transition duration-150 shadow-sm"
+            placeholder="e.g., 4"
+          />
+        </div>
 
-      <div className="mb-5">
-        <label htmlFor="batteryVoltage" className="block text-gray-700 text-base font-semibold mb-2">
-          Battery System Voltage (V):
-        </label>
-        <input
-          type="number"
-          id="batteryVoltage"
-          value={batteryVoltage}
-          onChange={(e) => setBatteryVoltage(parseFloat(e.target.value))}
-          step="1"
-          min="0"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
-          placeholder="e.g., 48"
-        />
-      </div>
+        <div className="input-group">
+          <label htmlFor="batteryVoltage" className="block text-gray-700 text-base font-semibold mb-2">
+            Battery System Voltage (V):
+          </label>
+          <input
+            type="number"
+            id="batteryVoltage"
+            value={batteryVoltage}
+            onChange={(e) => setBatteryVoltage(parseFloat(e.target.value))}
+            step="1"
+            min="0"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg transition duration-150 shadow-sm"
+            placeholder="e.g., 48"
+          />
+        </div>
 
-      <div className="mb-5">
-        <label htmlFor="batteryType" className="block text-gray-700 text-base font-semibold mb-2">
-          Battery Type:
-        </label>
-        <select
-          id="batteryType"
-          value={batteryType}
-          onChange={(e) => setBatteryType(e.target.value as keyof typeof efficiencyMap)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg bg-white"
-        >
-          {Object.keys(efficiencyMap).map((type) => (
-            <option key={type} value={type}>{type}</option>
-          ))}
-        </select>
-      </div>
+        <div className="input-group">
+          <label htmlFor="batteryType" className="block text-gray-700 text-base font-semibold mb-2">
+            Battery Type:
+          </label>
+          <select
+            id="batteryType"
+            value={batteryType}
+            onChange={(e) => setBatteryType(e.target.value as keyof typeof efficiencyMap)}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg bg-white shadow-sm"
+          >
+            {Object.keys(efficiencyMap).map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+        </div>
 
-      <div className="mb-6">
-        <label htmlFor="systemEfficiencyOverride" className="block text-gray-700 text-base font-semibold mb-2">
-          System Efficiency (%) (Optional Override):
-        </label>
-        <input
-          type="number"
-          id="systemEfficiencyOverride"
-          value={systemEfficiencyOverride}
-          onChange={(e) => setSystemEfficiencyOverride(e.target.value === '' ? '' : parseFloat(e.target.value))}
-          step="1"
-          min="1"
-          max="100"
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-200 text-lg"
-          placeholder="e.g., 90 (or leave blank)"
-        />
-      </div>
+        <div className="input-group mb-6">
+          <label htmlFor="systemEfficiencyOverride" className="block text-gray-700 text-base font-semibold mb-2">
+            System Efficiency (%) (Optional Override):
+          </label>
+          <input
+            type="number"
+            id="systemEfficiencyOverride"
+            value={systemEfficiencyOverride}
+            onChange={(e) => setSystemEfficiencyOverride(e.target.value === '' ? '' : parseFloat(e.target.value))}
+            step="1"
+            min="1"
+            max="100"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-lg transition duration-150 shadow-sm"
+            placeholder="e.g., 90 (or leave blank)"
+          />
+        </div>
+      </div> {/* End of space-y-5 */}
+
+      {errorMessage && (
+        <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-medium">
+          {errorMessage}
+        </div>
+      )}
 
       <button
         onClick={calculateBESS}
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-200 w-full transition duration-200 text-lg"
+        className="mt-6 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-300 w-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg text-lg"
       >
         Calculate BESS Sizing
       </button>
 
-      {showResult && (
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 font-semibold text-center space-y-2">
-          {capacityKWH !== null ? (
-            <>
-              <p>Required Battery Capacity: <span className="text-2xl font-extrabold">{capacityKWH}</span> kWh</p>
-              <p>Required Battery Capacity: <span className="text-xl font-bold">{capacityAH}</span> Ah</p>
-            </>
-          ) : (
-            <span className="text-red-600">Please enter valid inputs.</span>
-          )}
+      {showResult && capacityKWH !== null && capacityAH !== null && (
+        <div className="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg text-indigo-800 font-semibold text-center space-y-2 shadow-md">
+          <p className="text-xl">Required Battery Capacity: <span className="text-2xl font-extrabold">{capacityKWH}</span> kWh</p>
+          <p className="text-xl">Required Battery Capacity: <span className="text-2xl font-bold">{capacityAH}</span> Ah</p>
         </div>
       )}
     </div>
