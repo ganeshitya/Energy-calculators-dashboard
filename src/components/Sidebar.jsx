@@ -1,26 +1,48 @@
 // src/components/Sidebar.jsx
 import React from 'react';
 
-const Sidebar = () => {
+// Accept setActiveCalculator as a prop
+const Sidebar = ({ setActiveCalculator, activeCalculator }) => {
+
+  const handleCalculatorClick = (calculatorName) => {
+    setActiveCalculator(calculatorName);
+  };
+
   return (
     <div className="w-64 bg-indigo-700 text-white flex flex-col p-4 shadow-lg">
-      <div className="text-2xl font-bold mb-8">GM-Energy</div>
+      <div className="text-2xl font-bold mb-8 text-center">GM-Energy</div>
       <nav>
         <ul>
           <li className="mb-4">
-            <a href="#" className="block py-2 px-4 rounded hover:bg-indigo-600 transition duration-150">
+            <button
+              onClick={() => handleCalculatorClick('solar')}
+              // Add active class based on activeCalculator prop
+              className={`block py-2 px-4 rounded transition duration-150 w-full text-left
+                ${activeCalculator === 'solar' ? 'bg-indigo-800 shadow-inner' : 'hover:bg-indigo-600'}`
+              }
+            >
               Rooftop Solar
-            </a>
+            </button>
           </li>
           <li className="mb-4">
-            <a href="#" className="block py-2 px-4 rounded hover:bg-indigo-600 transition duration-150">
+            <button
+              onClick={() => handleCalculatorClick('batteryDegradation')}
+              className={`block py-2 px-4 rounded transition duration-150 w-full text-left
+                ${activeCalculator === 'batteryDegradation' ? 'bg-indigo-800 shadow-inner' : 'hover:bg-indigo-600'}`
+              }
+            >
               Battery Degradation
-            </a>
+            </button>
           </li>
           <li className="mb-4">
-            <a href="#" className="block py-2 px-4 rounded hover:bg-indigo-600 transition duration-150">
+            <button
+              onClick={() => handleCalculatorClick('bessSizing')}
+              className={`block py-2 px-4 rounded transition duration-150 w-full text-left
+                ${activeCalculator === 'bessSizing' ? 'bg-indigo-800 shadow-inner' : 'hover:bg-indigo-600'}`
+              }
+            >
               BESS Sizing
-            </a>
+            </button>
           </li>
           {/* Add more calculator links here */}
         </ul>
