@@ -1,5 +1,6 @@
 // src/App.tsx
-import { useState, FC } from 'react'; // Import FC for typing functional components
+import { useState } from 'react';
+import type { FC } from 'react'; // Use type-only import for FC
 import Sidebar from './components/Sidebar.tsx';
 
 // Import all your calculator components

@@ -1,5 +1,6 @@
 // src/components/BatteryDegradationCalculator.tsx
-import { useState, FC } from 'react';
+import { useState } from 'react';
+import type { FC } from 'react'; // Use type-only import for FC
 
 const BatteryDegradationCalculator: FC = () => {
   // State for input values

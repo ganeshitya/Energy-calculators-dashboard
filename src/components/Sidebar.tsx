@@ -1,5 +1,5 @@
 // src/components/Sidebar.tsx
-import React, { FC } from 'react'; // Keep React and import FC for typing
+import type { FC } from 'react'; // Use type-only import for FC
 
 // Define the types for the props that Sidebar expects
 interface SidebarProps {

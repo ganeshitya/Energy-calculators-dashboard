@@ -1,5 +1,6 @@
 // src/components/BESSBotCalculator.tsx
-import { useState, FC } from 'react';
+import { useState } from 'react';
+import type { FC } from 'react'; // Use type-only import for FC
 
 const BESSBotCalculator: FC = () => {
   // State for input values
